@@ -30,10 +30,11 @@ func champion(w http.ResponseWriter, r *http.Request) {
 	//push
 	pusher, ok := w.(http.Pusher)
 	if ok {
-		fmt.Println("Push is supported")
-		var err error = pusher.Push("/static/dist/main.css", nil)
+		//fmt.Println("Push is supported")
+		var err error = pusher.Push("/dist/main.css", nil)
+
 		if err != nil {
-			fmt.Printf("Failed to push: %v", err)
+			fmt.Printf("Failed to push: %v\n", err)
 			return
 		}
 	}
