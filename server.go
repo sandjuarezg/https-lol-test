@@ -14,10 +14,16 @@ import (
 func main() {
 	http.Handle("/", http.FileServer(http.Dir("./static")))
 	http.HandleFunc("/champion", champion)
+	http.HandleFunc("/resource", resource)
 
 	fmt.Println("Listening on localhost:8080")
 
 	log.Fatal(http.ListenAndServeTLS(":8080", "cert.pem", "key.pem", nil))
+}
+
+func resource(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf(" ----- Resource - Response from %s\n", r.URL.RequestURI())
+	fmt.Printf(" ----- Resource - Address response: %s\n", r.RemoteAddr)
 }
 
 func champion(w http.ResponseWriter, r *http.Request) {
@@ -30,13 +36,20 @@ func champion(w http.ResponseWriter, r *http.Request) {
 	//push
 	pusher, ok := w.(http.Pusher)
 	if ok {
-		//fmt.Println("Push is supported")
-		var err error = pusher.Push("/dist/main.css", nil)
-
+		var err error = pusher.Push("/resource", nil)
 		if err != nil {
 			fmt.Printf("Failed to push: %v\n", err)
 			return
 		}
+
+		err = pusher.Push("/dist/main.css", nil)
+		if err != nil {
+			fmt.Printf("Failed to push: %v\n", err)
+			return
+		}
+
+		fmt.Printf(" ----- Push - Response from %s\n", r.URL.RequestURI())
+		fmt.Printf(" ----- Push - Address response: %s\n", r.RemoteAddr)
 	}
 
 	//get data from form of index
